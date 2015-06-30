@@ -7,8 +7,8 @@
 /*
  * onUpdate needed? how to make it thread safe otherwise?
  * try to use same sampleRate after device changed
- * disconnect onChange behavior?
  * reload device list
+ * disabled events for labels?
  */
 
 class ofxSoundStreamGui {
@@ -27,17 +27,21 @@ protected:
 	ofParameter<int> outputChannels,inputChannels,nBuffers;
 	ofParameter<bool> bConnect,bConnectOnStart,eListDevices;
 
-	ofBaseApp * app;
 	ofSoundStream * stream;
+	ofBaseApp * app;
 	vector<ofSoundDevice> devices;
 	vector<unsigned int> sampleRates;
 
 	bool eDeviceChanged, bOnStart;
 
-	void connect(bool & active);
+	void connect();
+	void connectSlot(bool & active);
+	void disconnect();
 
 	void updateLabels(int &);
+	void paramChanged( int &);
 	void updateDeviceId(int &);
+//	void parameterChanged( ofAbstractParameter & parameter );
 
 	void reloadDeviceList();
 };

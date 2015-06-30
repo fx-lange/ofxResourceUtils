@@ -45,9 +45,13 @@ ofxGuiGroup * ofxSoundStreamGui::setup(std::string name, ofSoundStream * stream,
 	//sampleRateIdx -> sampleRateLabel (instant)
 	bufferSizeIdx.addListener(this,&ofxSoundStreamGui::updateLabels);
 	sampleRateIdx.addListener(this,&ofxSoundStreamGui::updateLabels);
+	//param change -> disconnect
+	outputChannels.addListener(this,&ofxSoundStreamGui::paramChanged);
+	inputChannels.addListener(this,&ofxSoundStreamGui::paramChanged);
+	nBuffers.addListener(this,&ofxSoundStreamGui::paramChanged);
 
-	//connect -> open/fail
-	bConnect.addListener(this,&ofxSoundStreamGui::connect);
+	//connect -> open/fail (instant)
+	bConnect.addListener(this,&ofxSoundStreamGui::connectSlot);
 
 	//connection status & labels shouldn't be stored
 	bConnect.setSerializable(false);
@@ -56,26 +60,9 @@ ofxGuiGroup * ofxSoundStreamGui::setup(std::string name, ofSoundStream * stream,
 	bufferSizeLabel.setSerializable(false);
 	deviceLabel.setSerializable(false);
 
+//	ofAddListener(((ofParameterGroup&)gui.getParameter()).parameterChangedE,this,&ofxSoundStreamGui::parameterChanged);
+
 	return &gui;
-}
-
-void ofxSoundStreamGui::connect(bool & active){
-	if(active){
-		stream->setDeviceID(deviceID);
-		int sampleRate = sampleRates[sampleRateIdx];
-		int bufferSize = pow(2,(int)bufferSizeIdx);
-
-		bool result = stream->setup(app,outputChannels,inputChannels,sampleRate,bufferSize,nBuffers);
-
-		if(result){
-			status = "open";
-		}else{
-			bConnect.set(false);
-		}
-	}else{
-		stream->close();
-		status = "close";
-	}
 }
 
 bool ofxSoundStreamGui::update(){
@@ -91,11 +78,42 @@ bool ofxSoundStreamGui::update(){
 	}else if(bOnStart){
 		bOnStart = false;
 		if(bConnectOnStart){
-			bConnect.set(true);
+			connect();
 		}
 	}
 
 	return false;
+}
+
+void ofxSoundStreamGui::connect(){
+	bConnect.set(true); //triggers connectSlot(true)
+}
+
+void ofxSoundStreamGui::connectSlot(bool & active){
+	if(active){
+		stream->setDeviceID(deviceID);
+		int sampleRate = sampleRates[sampleRateIdx];
+		int bufferSize = pow(2,(int)bufferSizeIdx);
+
+		bool result = stream->setup(app,outputChannels,inputChannels,sampleRate,bufferSize,nBuffers);
+
+		if(result){
+			status = "open";
+		}else{
+			disconnect();
+		}
+	}else{
+		status = "close";
+		stream->close();
+	}
+}
+
+void ofxSoundStreamGui::disconnect(){
+	bConnect.set(false); //triggers connectSlot(false);
+}
+
+void ofxSoundStreamGui::paramChanged( int &){
+	disconnect();
 }
 
 void ofxSoundStreamGui::updateLabels(int &){
@@ -103,14 +121,20 @@ void ofxSoundStreamGui::updateLabels(int &){
 	if(sampleRateIdx < (int)sampleRates.size()){
 		sampleRateLabel = ofToString(sampleRates[sampleRateIdx]);
 	}
+	disconnect();
 }
 
 void ofxSoundStreamGui::updateDeviceId(int &){
-	eDeviceChanged = true;
+	eDeviceChanged = true; //... more on update
+	disconnect();
 }
+
+//void ofxSoundStreamGui::parameterChanged( ofAbstractParameter & parameter ){
+//	ofLogNotice("ofxSoundStreamGui::parameterChanged");
+//	disconnect();
+//}
 
 void ofxSoundStreamGui::reloadDeviceList(){
 	devices = stream->getDeviceList();
-
-	//TODO set deviceID max
+	//TODO not fully implemented yet
 }
