@@ -1,7 +1,7 @@
 #include "ofxSoundStreamGui.h"
 
 ofxSoundStreamGui::ofxSoundStreamGui()
-:stream(NULL){
+:stream(NULL),app(NULL){
 	eDeviceChanged = true;
 }
 
@@ -45,6 +45,13 @@ ofxGuiGroup * ofxSoundStreamGui::setup(std::string name, ofSoundStream * stream,
 
 	//connect -> open/fail
 	bConnect.addListener(this,&ofxSoundStreamGui::connect);
+
+	//connection status & labels shouldn't be stored
+	bConnect.setSerializable(false);
+	status.setSerializable(false);
+	sampleRateLabel.setSerializable(false);
+	bufferSizeLabel.setSerializable(false);
+	deviceLabel.setSerializable(false);
 
 	return &gui;
 }
