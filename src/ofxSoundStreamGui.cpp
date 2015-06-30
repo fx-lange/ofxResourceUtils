@@ -3,6 +3,7 @@
 ofxSoundStreamGui::ofxSoundStreamGui()
 :stream(NULL),app(NULL){
 	eDeviceChanged = true;
+	bOnStart = true;
 }
 
 ofxSoundStreamGui::~ofxSoundStreamGui() {}
@@ -18,6 +19,8 @@ ofxGuiGroup * ofxSoundStreamGui::setup(std::string name, ofSoundStream * stream,
 	devices = stream->getDeviceList();
 
 	gui.setup(name);
+
+	gui.add(bConnectOnStart.set("connectOnStart",false));
 
 	gui.add(deviceID.set("deviceId",0,0,devices.size()-1));
 	gui.add(deviceLabel.set("device",""));
@@ -76,8 +79,6 @@ void ofxSoundStreamGui::connect(bool & active){
 }
 
 bool ofxSoundStreamGui::update(){
-	//disconnect and toggle off on update (deviceId || settings)
-
 	if(eDeviceChanged){
 		deviceLabel = devices[deviceID].name;
 		sampleRates = devices[deviceID].sampleRates;
@@ -87,6 +88,11 @@ bool ofxSoundStreamGui::update(){
 		eDeviceChanged = false;
 
 		return true;
+	}else if(bOnStart){
+		bOnStart = false;
+		if(bConnectOnStart){
+			bConnect.set(true);
+		}
 	}
 
 	return false;

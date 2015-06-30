@@ -7,7 +7,8 @@
 /*
  * onUpdate needed? how to make it thread safe otherwise?
  * try to use same sampleRate after device changed
- * disconnect & auto connect behavior?
+ * disconnect onChange behavior?
+ * reload device list
  */
 
 class ofxSoundStreamGui {
@@ -31,7 +32,7 @@ protected:
 	vector<ofSoundDevice> devices;
 	vector<unsigned int> sampleRates;
 
-	bool eDeviceChanged;
+	bool eDeviceChanged, bOnStart;
 
 	void connect(bool & active);
 
