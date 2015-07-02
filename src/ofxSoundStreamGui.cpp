@@ -60,8 +60,6 @@ ofxGuiGroup * ofxSoundStreamGui::setup(std::string name, ofSoundStream * stream,
 	bufferSizeLabel.setSerializable(false);
 	deviceLabel.setSerializable(false);
 
-//	ofAddListener(((ofParameterGroup&)gui.getParameter()).parameterChangedE,this,&ofxSoundStreamGui::parameterChanged);
-
 	return &gui;
 }
 
