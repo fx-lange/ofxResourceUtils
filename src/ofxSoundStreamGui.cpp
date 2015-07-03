@@ -1,26 +1,18 @@
 #include "ofxSoundStreamGui.h"
 
 ofxSoundStreamGui::ofxSoundStreamGui()
-:stream(NULL),app(NULL){
+:stream(NULL){
 	eDeviceChanged = true;
-	bOnStart = true;
 }
 
 ofxSoundStreamGui::~ofxSoundStreamGui() {}
 
 ofxGuiGroup * ofxSoundStreamGui::setup(std::string name, ofSoundStream * stream, ofBaseApp * app){
+	ofxAbstractDeviceGui::setup(name,app);
+
 	this->stream = stream;
-	if(app != NULL){
-		this->app = app;
-	}else{
-		this->app = ofGetAppPtr();
-	}
 
 	devices = stream->getDeviceList();
-
-	gui.setup(name);
-
-	gui.add(bConnectOnStart.set("connectOnStart",false));
 
 	gui.add(deviceID.set("deviceId",0,0,devices.size()-1));
 	gui.add(deviceLabel.set("device",""));
@@ -35,9 +27,6 @@ ofxGuiGroup * ofxSoundStreamGui::setup(std::string name, ofSoundStream * stream,
 	gui.add(inputChannels.set("inputChannels",0,0,8));
 	gui.add(nBuffers.set("nBuffers",4,1,8));
 
-	gui.add(bConnect.set("setup",false));
-	gui.add(status.set("status","close"));
-
 	//id -> deviceLabel && sampleRateList => sampleRateMax&sampleRateIdx (on update)
 	deviceID.addListener(this,&ofxSoundStreamGui::updateDeviceId);
 
@@ -50,12 +39,6 @@ ofxGuiGroup * ofxSoundStreamGui::setup(std::string name, ofSoundStream * stream,
 	inputChannels.addListener(this,&ofxSoundStreamGui::paramChanged);
 	nBuffers.addListener(this,&ofxSoundStreamGui::paramChanged);
 
-	//connect -> open/fail (instant)
-	bConnect.addListener(this,&ofxSoundStreamGui::connectSlot);
-
-	//connection status & labels shouldn't be stored
-	bConnect.setSerializable(false);
-	status.setSerializable(false);
 	sampleRateLabel.setSerializable(false);
 	bufferSizeLabel.setSerializable(false);
 	deviceLabel.setSerializable(false);
@@ -63,7 +46,7 @@ ofxGuiGroup * ofxSoundStreamGui::setup(std::string name, ofSoundStream * stream,
 	return &gui;
 }
 
-bool ofxSoundStreamGui::update(){
+void ofxSoundStreamGui::update(){
 	if(eDeviceChanged){
 		deviceLabel = devices[deviceID].name;
 		sampleRates = devices[deviceID].sampleRates;
@@ -72,19 +55,12 @@ bool ofxSoundStreamGui::update(){
 
 		eDeviceChanged = false;
 
-		return true;
 	}else if(bOnStart){
 		bOnStart = false;
 		if(bConnectOnStart){
 			connect();
 		}
 	}
-
-	return false;
-}
-
-void ofxSoundStreamGui::connect(){
-	bConnect.set(true); //triggers connectSlot(true)
 }
 
 void ofxSoundStreamGui::connectSlot(bool & active){
@@ -106,10 +82,6 @@ void ofxSoundStreamGui::connectSlot(bool & active){
 	}
 }
 
-void ofxSoundStreamGui::disconnect(){
-	bConnect.set(false); //triggers connectSlot(false);
-}
-
 void ofxSoundStreamGui::paramChanged( int &){
 	disconnect();
 }
@@ -127,12 +99,7 @@ void ofxSoundStreamGui::updateDeviceId(int &){
 	disconnect();
 }
 
-//void ofxSoundStreamGui::parameterChanged( ofAbstractParameter & parameter ){
-//	ofLogNotice("ofxSoundStreamGui::parameterChanged");
-//	disconnect();
+//void ofxSoundStreamGui::reloadDeviceList(){
+//	devices = stream->getDeviceList();
+//	//TODO not fully implemented yet
 //}
-
-void ofxSoundStreamGui::reloadDeviceList(){
-	devices = stream->getDeviceList();
-	//TODO not fully implemented yet
-}

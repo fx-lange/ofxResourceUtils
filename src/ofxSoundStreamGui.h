@@ -1,8 +1,6 @@
 #pragma once
 
-#include "ofMain.h"
-#include "ofxGui.h"
-
+#include "ofxAbstractDeviceGui.h"
 //TODO
 /*
  * onUpdate needed? how to make it thread safe otherwise?
@@ -11,37 +9,32 @@
  * disabled events for labels?
  */
 
-class ofxSoundStreamGui {
+class ofxSoundStreamGui : public ofxAbstractDeviceGui {
 public:
 	ofxSoundStreamGui();
 	virtual ~ofxSoundStreamGui();
 
 	ofxGuiGroup * setup(std::string name, ofSoundStream * stream, ofBaseApp * app = NULL);
 
-	bool update();
+	virtual void update(); //TODO or no update at all?
 protected:
-	ofxGuiGroup gui;
-
 	ofParameter<int> deviceID,sampleRateIdx,bufferSizeIdx;
-	ofParameter<string> deviceLabel, sampleRateLabel, bufferSizeLabel, status;
+	ofParameter<string> deviceLabel, sampleRateLabel, bufferSizeLabel;
 	ofParameter<int> outputChannels,inputChannels,nBuffers;
-	ofParameter<bool> bConnect,bConnectOnStart,eListDevices;
+//	ofParameter<bool> eListDevices;
 
 	ofSoundStream * stream;
-	ofBaseApp * app;
+
 	vector<ofSoundDevice> devices;
 	vector<unsigned int> sampleRates;
 
-	bool eDeviceChanged, bOnStart;
+	bool eDeviceChanged; //TODO-> abstract & virtual =0 handleDeviceChanged?
 
-	void connect();
-	void connectSlot(bool & active);
-	void disconnect();
+	virtual void connectSlot(bool & active);
 
 	void updateLabels(int &);
 	void paramChanged( int &);
 	void updateDeviceId(int &);
-//	void parameterChanged( ofAbstractParameter & parameter );
 
-	void reloadDeviceList();
+//	void reloadDeviceList();
 };
