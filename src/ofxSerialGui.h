@@ -19,4 +19,6 @@ protected:
 	vector<ofSerialDeviceInfo> devices;
 
 	virtual void connectSlot(bool & active);
+
+	void paramChanged( int &);
 };
