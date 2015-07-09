@@ -4,6 +4,7 @@
 
 using namespace std;
 
+//TODO doesn't work because of missing virtual in base class
 class ofxSelectSlider : public ofxIntSlider{
 public:
 	ofxSelectSlider();
@@ -15,6 +16,7 @@ public:
 protected:
 	vector<string> labels;
 
+	//doesn't work because of missing virtual in base class
 	virtual void generateText();
 
 	//hide normal setups
