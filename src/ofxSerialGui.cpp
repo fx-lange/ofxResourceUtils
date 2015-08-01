@@ -14,19 +14,22 @@ ofxGuiGroup * ofxSerialGui::setup(string name, ofSerial * serial, ofBaseApp * ap
 
 	devices = serial->getDeviceList();
 
-	gui.add(deviceID.set("deviceId",0,0,devices.size()-1));
-	gui.add(deviceLabel.set("device",""));
+	std::vector<string> deviceNames;
+	for(size_t i=0;i<devices.size();++i){
+		deviceNames.push_back(devices[i].getDeviceName());
+	}
+	gui.add(deviceID.setup("device",0,deviceNames));
 
-	gui.add(baudrateIdx.set("baudrateIdx",10,0,11));
-	gui.add(baudrateLabel.set("baudrate",""));
+	std::vector<string> labels;
+	for(int i=0;i<12;++i){
+		labels.push_back(ofToString(baudrates[i]));
+	}
+	gui.add(baudrateSelect.setup("baudrate",10,labels));
 
 	//id -> deviceLabel && disconnect
 	deviceID.addListener(this,&ofxSerialGui::paramChanged);
 
-	baudrateIdx.addListener(this,&ofxSerialGui::paramChanged);
-
-	baudrateLabel.setSerializable(false);
-	deviceLabel.setSerializable(false);
+	baudrateSelect.addListener(this,&ofxSerialGui::paramChanged);
 
 	return &gui;
 }
@@ -42,7 +45,7 @@ void ofxSerialGui::update(){
 
 void ofxSerialGui::connectSlot(bool & active){
 	if(active){
-		bool result = serial->setup(deviceID,baudrates[baudrateIdx]);
+		bool result = serial->setup(deviceID,baudrates[baudrateSelect]);
 		if(result){
 			status = "open";
 		}else{
@@ -56,7 +59,4 @@ void ofxSerialGui::connectSlot(bool & active){
 
 void ofxSerialGui::paramChanged( int &){
 	disconnect();
-
-	baudrateLabel = ofToString(baudrates[baudrateIdx]);
-	deviceLabel = devices[deviceID].getDeviceName();
 }

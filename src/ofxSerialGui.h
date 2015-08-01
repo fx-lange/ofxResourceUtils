@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofxAbstractDeviceGui.h"
+#include "ofxSelectSlider.h"
 
 class ofxSerialGui : public ofxAbstractDeviceGui {
 public:
@@ -11,8 +12,7 @@ public:
 
 	virtual void update();
 protected:
-	ofParameter<int> deviceID, baudrateIdx;
-	ofParameter<string> deviceLabel, baudrateLabel;
+	ofxSelectSlider baudrateSelect, deviceID;
 
 	ofSerial * serial;
 
