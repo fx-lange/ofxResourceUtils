@@ -13,15 +13,21 @@ ofxGuiGroup * ofxSoundStreamGui::setup(std::string name, ofSoundStream * stream,
 	this->stream = stream;
 
 	devices = stream->getDeviceList();
+	std::vector<string> deviceNames;
+	for(size_t i=0;i<devices.size();++i){
+		deviceNames.push_back(devices[i].name);
+	}
+	gui.add(deviceID.setup("device",0,deviceNames));
 
-	gui.add(deviceID.set("deviceId",0,0,devices.size()-1));
-	gui.add(deviceLabel.set("device",""));
+	std::vector<string> bufferSizeStrings;
+	for(size_t i=8;i<=12;++i){
+		bufferSizeStrings.push_back(ofToString(pow(2,i)));
+	}
+	gui.add(bufferSizeIdx.setup("bufferSizeExp",0,bufferSizeStrings));
 
-	gui.add(bufferSizeIdx.set("bufferSizeExp",8,8,12));
-	gui.add(bufferSizeLabel.set("bufferSize","256"));
-
-	gui.add(sampleRateIdx.set("sampleRateIdx",0,0,0));
-	gui.add(sampleRateLabel.set("sampleRate",""));
+	std::vector<string> emptyRates;
+	emptyRates.push_back("");
+	gui.add(sampleRateIdx.setup("sampleRateIdx",0,emptyRates));
 
 	gui.add(outputChannels.set("outputChannels",0,0,8));
 	gui.add(inputChannels.set("inputChannels",0,0,8));
@@ -30,28 +36,24 @@ ofxGuiGroup * ofxSoundStreamGui::setup(std::string name, ofSoundStream * stream,
 	//id -> deviceLabel && sampleRateList => sampleRateMax&sampleRateIdx (on update)
 	deviceID.addListener(this,&ofxSoundStreamGui::updateDeviceId);
 
-	//bufferSizeIdx -> bufferSizeLabel (instant)
-	//sampleRateIdx -> sampleRateLabel (instant)
-	bufferSizeIdx.addListener(this,&ofxSoundStreamGui::updateLabels);
-	sampleRateIdx.addListener(this,&ofxSoundStreamGui::updateLabels);
 	//param change -> disconnect
+	sampleRateIdx.addListener(this,&ofxSoundStreamGui::paramChanged);
+	bufferSizeIdx.addListener(this,&ofxSoundStreamGui::paramChanged);
 	outputChannels.addListener(this,&ofxSoundStreamGui::paramChanged);
 	inputChannels.addListener(this,&ofxSoundStreamGui::paramChanged);
 	nBuffers.addListener(this,&ofxSoundStreamGui::paramChanged);
-
-	sampleRateLabel.setSerializable(false);
-	bufferSizeLabel.setSerializable(false);
-	deviceLabel.setSerializable(false);
 
 	return &gui;
 }
 
 void ofxSoundStreamGui::update(){
 	if(eDeviceChanged){
-		deviceLabel = devices[deviceID].name;
 		sampleRates = devices[deviceID].sampleRates;
-		sampleRateIdx.setMax(sampleRates.size()-1);
-		sampleRateIdx = min((int)sampleRateIdx,sampleRateIdx.getMax());
+		std::vector<string> rateStrings;
+		for(size_t i=0;i<sampleRates.size();++i){
+			rateStrings.push_back(ofToString(sampleRates[i]));
+		}
+		sampleRateIdx.setLabels(rateStrings);
 
 		eDeviceChanged = false;
 
@@ -83,14 +85,6 @@ void ofxSoundStreamGui::connectSlot(bool & active){
 }
 
 void ofxSoundStreamGui::paramChanged( int &){
-	disconnect();
-}
-
-void ofxSoundStreamGui::updateLabels(int &){
-	bufferSizeLabel = ofToString(pow(2,(int)bufferSizeIdx));
-	if(sampleRateIdx < (int)sampleRates.size()){
-		sampleRateLabel = ofToString(sampleRates[sampleRateIdx]);
-	}
 	disconnect();
 }
 

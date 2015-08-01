@@ -1,6 +1,8 @@
 #pragma once
 
 #include "ofxAbstractDeviceGui.h"
+#include "ofxSelectSlider.h"
+
 //TODO
 /*
  * onUpdate needed? how to make it thread safe otherwise?
@@ -18,8 +20,7 @@ public:
 
 	virtual void update(); //TODO or no update at all?
 protected:
-	ofParameter<int> deviceID,sampleRateIdx,bufferSizeIdx;
-	ofParameter<string> deviceLabel, sampleRateLabel, bufferSizeLabel;
+	ofxSelectSlider deviceID,sampleRateIdx,bufferSizeIdx;
 	ofParameter<int> outputChannels,inputChannels,nBuffers;
 //	ofParameter<bool> eListDevices;
 
@@ -32,7 +33,6 @@ protected:
 
 	virtual void connectSlot(bool & active);
 
-	void updateLabels(int &);
 	void paramChanged( int &);
 	void updateDeviceId(int &);
 
