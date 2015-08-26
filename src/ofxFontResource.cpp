@@ -1,6 +1,9 @@
 #include "ofxFontResource.h"
 
-ofParameterGroup * ofxFontResource::setup(string name, ofTrueTypeFont * font, string path){
+ofParameterGroup & ofxFontResource::setup(string name, ofTrueTypeFont * font, string path){
+	fontPtr = font;
+	filename = path;
+
 	group.setName(name);
 
 	group.add(fontSize.set("fontSize",14,8,70)); //TODO min&max
@@ -12,7 +15,9 @@ ofParameterGroup * ofxFontResource::setup(string name, ofTrueTypeFont * font, st
 
 	ofAddListener(group.parameterChangedE(),this,&ofxFontResource::paramChanged);
 
-	return &group;
+	reloadFont();
+
+	return group;
 }
 
 void ofxFontResource::paramChanged(ofAbstractParameter &){

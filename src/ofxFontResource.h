@@ -5,7 +5,7 @@
 class ofxFontResource {
 public:
 
-	ofParameterGroup * setup(string name, ofTrueTypeFont * font,string path);
+	ofParameterGroup & setup(string name, ofTrueTypeFont * font,string path);
 
 protected:
 	ofParameterGroup group;
@@ -14,6 +14,7 @@ protected:
 	ofParameter<int> fontSize, dpi;
 	ofParameter<bool> bAnitAliased, bFullCharacterSet, bMakeContour;
 	ofParameter<float> simplifyAmt;
+	//TODO line height? spacing?
 
 	ofTrueTypeFont * fontPtr;
 
