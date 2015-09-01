@@ -18,7 +18,7 @@ ofxGuiGroup * ofxFontResource::setup(const string & name, ofTrueTypeFont * font,
 		}
 	}else{
 		isDir = false;
-		filename.setName("f:");
+		filename.setName("font");
 		filename = path;
 		ofLogVerbose("ofxFontResource::setup") << "setup font resource with font: " << filename;
 	}
@@ -30,7 +30,7 @@ ofxGuiGroup * ofxFontResource::setup(const string & name, ofTrueTypeFont * font,
 		for(int i=0;i<(int)fontFiles.size();++i){
 			labels.push_back(fontFiles[i].getBaseName());
 		}
-		guiGroup.add(fontSelector.setup("f:",0,labels));
+		guiGroup.add(fontSelector.setup("font",0,labels));
 		filename = fontFiles[0].getAbsolutePath();
 	}else{
 		guiGroup.add(filename);
