@@ -4,7 +4,6 @@
 #include "ofxGui.h"
 #include "ofxSelectSlider.h"
 
-//TODO add filename as label
 //TODO simple vs. extended vs. ... version
 
 class ofxFontResource {
