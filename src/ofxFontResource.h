@@ -1,6 +1,8 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxGui.h"
+#include "ofxSelectSlider.h"
 
 //TODO add filename as label
 //TODO simple vs. extended vs. ... version
@@ -8,16 +10,22 @@
 class ofxFontResource {
 public:
 
-	ofParameterGroup & setup(const string & name, ofTrueTypeFont * font, const string & path);
+	ofxGuiGroup * setup(const string & name, ofTrueTypeFont * font, string path = "");
 
 	ofEvent<void> fontRebuildEvent;
 protected:
-	ofParameterGroup group;
+	ofxGuiGroup guiGroup;
+
+	bool isDir;
+	vector<ofFile> fontFiles;
 
 	ofParameter<string> filename;
 	ofParameter<int> fontSize, dpi;
 	ofParameter<bool> bAnitAliased, bFullCharacterSet, bMakeContour;
 	ofParameter<float> simplifyAmt;
+
+	ofxSelectSlider fontSelector;
+
 	//TODO line height? spacing?
 
 	ofTrueTypeFont * fontPtr;

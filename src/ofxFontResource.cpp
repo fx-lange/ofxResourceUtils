@@ -1,23 +1,54 @@
 #include "ofxFontResource.h"
 
-ofParameterGroup & ofxFontResource::setup(const string & name, ofTrueTypeFont * font, const string & path){
-	fontPtr = font;
-	filename = path;
+ofxGuiGroup * ofxFontResource::setup(const string & name, ofTrueTypeFont * font, const string path){
+	this->fontPtr = font;
 
-	group.setName(name);
+	//check if path is a non empty directory or one specific font
+	ofDirectory dir = ofDirectory(path);
+	if(dir.isDirectory()){
+		dir.allowExt("ttf"); //TODO what else?
+		fontFiles = dir.getFiles();
 
-	group.add(fontSize.set("fontSize",14,8,70)); //TODO min&max
-	group.add(bAnitAliased.set("antiAliased",true));
-	group.add(bFullCharacterSet.set("fullCharacterSet",true));
-	group.add(bMakeContour.set("makeContour",false));
-	group.add(simplifyAmt.set("simplyfyAmt",0.3,0.001,100)); //TODO min&max?
-	group.add(dpi.set("dpi",0,0,96)); //TODO max?
+		if(!fontFiles.empty()){
+			isDir = true;
+			ofLogVerbose("ofxFontResource::setup") << "setup font resource with directory: " << path;
+		}else{
+			isDir = false;
+			ofLogError("ofxFontResource::setup") << "setup font resource with empty directory: " << path;
+		}
+	}else{
+		isDir = false;
+		filename.setName("font");
+		filename = path;
+		ofLogVerbose("ofxFontResource::setup") << "setup font resource with font: " << filename;
+	}
 
-	ofAddListener(group.parameterChangedE(),this,&ofxFontResource::paramChanged);
+	guiGroup.setup(name);
+
+	if(isDir){
+		std::vector<string> labels;
+		for(int i=0;i<(int)fontFiles.size();++i){
+			labels.push_back(fontFiles[i].getFileName());
+		}
+		guiGroup.add(fontSelector.setup("font",0,labels));
+		filename = fontFiles[0].getAbsolutePath();
+	}else{
+		guiGroup.add(filename);
+	}
+
+	guiGroup.add(fontSize.set("fontSize",14,8,70)); //TODO min&max
+	guiGroup.add(bAnitAliased.set("antiAliased",true));
+	guiGroup.add(bFullCharacterSet.set("fullCharacterSet",true));
+	guiGroup.add(bMakeContour.set("makeContour",false));
+	guiGroup.add(simplifyAmt.set("simplyfyAmt",0.3,0.001,100)); //TODO min&max?
+	guiGroup.add(dpi.set("dpi",0,0,96)); //TODO max?
+
+	ofParameterGroup & paramGroup = (ofParameterGroup&)guiGroup.getParameter();
+	ofAddListener(paramGroup.parameterChangedE(),this,&ofxFontResource::paramChanged);
 
 	reloadFont();
 
-	return group;
+	return &guiGroup;
 }
 
 void ofxFontResource::paramChanged(ofAbstractParameter &){
@@ -25,6 +56,9 @@ void ofxFontResource::paramChanged(ofAbstractParameter &){
 }
 
 void ofxFontResource::reloadFont(){
+	if(isDir){
+		filename = fontFiles[fontSelector].getAbsolutePath();
+	}
 	fontPtr->load(filename,fontSize,bAnitAliased,bFullCharacterSet,bMakeContour,simplifyAmt,dpi);
 	ofNotifyEvent(fontRebuildEvent);
 }
