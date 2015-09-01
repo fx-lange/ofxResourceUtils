@@ -1,6 +1,6 @@
 #include "ofxFontResource.h"
 
-ofParameterGroup & ofxFontResource::setup(string name, ofTrueTypeFont * font, string path){
+ofParameterGroup & ofxFontResource::setup(const string & name, ofTrueTypeFont * font, const string & path){
 	fontPtr = font;
 	filename = path;
 
@@ -26,5 +26,6 @@ void ofxFontResource::paramChanged(ofAbstractParameter &){
 
 void ofxFontResource::reloadFont(){
 	fontPtr->load(filename,fontSize,bAnitAliased,bFullCharacterSet,bMakeContour,simplifyAmt,dpi);
+	ofNotifyEvent(fontRebuildEvent);
 }
 

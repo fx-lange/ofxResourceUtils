@@ -2,11 +2,15 @@
 
 #include "ofMain.h"
 
+//TODO add filename as label
+//TODO simple vs. extended vs. ... version
+
 class ofxFontResource {
 public:
 
-	ofParameterGroup & setup(string name, ofTrueTypeFont * font,string path);
+	ofParameterGroup & setup(const string & name, ofTrueTypeFont * font, const string & path);
 
+	ofEvent<void> fontRebuildEvent;
 protected:
 	ofParameterGroup group;
 
