@@ -1,6 +1,9 @@
 #include "ofxFontResource.h"
 
 ofxGuiGroup * ofxFontResource::setup(const string & name, ofTrueTypeFont * font, const string path){
+	ebParamChanged = false;
+	bUpdateUsed = false;
+
 	this->fontPtr = font;
 
 	//check if path is a non empty directory or one specific font
@@ -42,6 +45,7 @@ ofxGuiGroup * ofxFontResource::setup(const string & name, ofTrueTypeFont * font,
 	guiGroup.add(bMakeContour.set("makeContour",false));
 	guiGroup.add(simplifyAmt.set("simplyfyAmt",0.3,0.001,100)); //TODO min&max?
 	guiGroup.add(dpi.set("dpi",0,0,96)); //TODO max?
+	guiGroup.add(bEventReload.set("eventReload",true));
 
 	ofParameterGroup & paramGroup = (ofParameterGroup&)guiGroup.getParameter();
 	ofAddListener(paramGroup.parameterChangedE(),this,&ofxFontResource::paramChanged);
@@ -51,11 +55,25 @@ ofxGuiGroup * ofxFontResource::setup(const string & name, ofTrueTypeFont * font,
 	return &guiGroup;
 }
 
+void ofxFontResource::update(){
+	bUpdateUsed = true;
+	if(ebParamChanged){
+		reloadFont();
+	}
+}
+
 void ofxFontResource::paramChanged(ofAbstractParameter &){
-	reloadFont();
+	ebParamChanged = true;
+	if(bEventReload){
+		reloadFont();
+	}else{
+		if(!bUpdateUsed)
+			ofLogWarning("ofxFontResource::paramChanged") << "font not reloading! activate eventReload or integrate ofxFontResource::update";
+	}
 }
 
 void ofxFontResource::reloadFont(){
+	ebParamChanged = false;
 	if(isDir){
 		filename = fontFiles[fontSelector].getAbsolutePath();
 	}

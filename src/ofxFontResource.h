@@ -10,6 +10,7 @@ class ofxFontResource {
 public:
 
 	ofxGuiGroup * setup(const string & name, ofTrueTypeFont * font, string path = "");
+	void update(); //if event reload is not active you need to handle it via update [important for multi-window setup]
 
 	ofEvent<void> fontRebuildEvent;
 protected:
@@ -22,6 +23,7 @@ protected:
 	ofParameter<int> fontSize, dpi;
 	ofParameter<bool> bAnitAliased, bFullCharacterSet, bMakeContour;
 	ofParameter<float> simplifyAmt;
+	ofParameter<bool> bEventReload;
 
 	ofxSelectSlider fontSelector;
 
@@ -29,6 +31,9 @@ protected:
 
 	ofTrueTypeFont * fontPtr;
 
+	bool ebParamChanged;
 	void reloadFont();
 	void paramChanged(ofAbstractParameter&);
+
+	bool bUpdateUsed; //flag to check correct usage
 };
