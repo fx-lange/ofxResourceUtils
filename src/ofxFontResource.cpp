@@ -10,6 +10,7 @@ ofxGuiGroup * ofxFontResource::setup(const string & name, ofTrueTypeFont * font,
 	ofDirectory dir = ofDirectory(path);
 	if(dir.isDirectory()){
 		dir.allowExt("ttf"); //TODO what else?
+		dir.sort();
 		fontFiles = dir.getFiles();
 
 		if(!fontFiles.empty()){
