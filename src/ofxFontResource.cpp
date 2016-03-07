@@ -1,5 +1,10 @@
 #include "ofxFontResource.h"
 
+ofxGuiGroup * ofxFontResource::setup(const string & name, const string path){
+	ofTrueTypeFont * font = new ofTrueTypeFont();
+	return setup(name,font,path);
+}
+
 ofxGuiGroup * ofxFontResource::setup(const string & name, ofTrueTypeFont * font, const string path){
 	ebParamChanged = false;
 	bUpdateUsed = false;
@@ -54,6 +59,10 @@ ofxGuiGroup * ofxFontResource::setup(const string & name, ofTrueTypeFont * font,
 	reloadFont();
 
 	return &guiGroup;
+}
+
+ofTrueTypeFont * ofxFontResource::getFont(){
+	return fontPtr;
 }
 
 void ofxFontResource::update(){

@@ -10,7 +10,10 @@ class ofxFontResource {
 public:
 
 	ofxGuiGroup * setup(const string & name, ofTrueTypeFont * font, string path = "");
+	ofxGuiGroup * setup(const string & name, string path = "");
 	void update(); //if event reload is not active you need to handle it via update [important for multi-window setup]
+
+	ofTrueTypeFont * getFont();
 
 	ofEvent<void> fontRebuildEvent;
 protected:
