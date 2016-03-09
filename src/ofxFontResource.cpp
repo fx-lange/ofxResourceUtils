@@ -50,7 +50,7 @@ ofxGuiGroup * ofxFontResource::setup(const string & name, ofTrueTypeFont * font,
 	guiGroup.add(bFullCharacterSet.set("fullCharacterSet",true));
 	guiGroup.add(bMakeContour.set("makeContour",false));
 	guiGroup.add(simplifyAmt.set("simplyfyAmt",0.3,0.001,100)); //TODO min&max?
-	guiGroup.add(dpi.set("dpi",0,0,96)); //TODO max?
+	guiGroup.add(dpi.set("dpi",0,0,500));
 	guiGroup.add(bEventReload.set("eventReload",true));
 
 	ofParameterGroup & paramGroup = (ofParameterGroup&)guiGroup.getParameter();
