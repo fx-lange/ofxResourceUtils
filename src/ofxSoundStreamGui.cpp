@@ -69,7 +69,11 @@ void ofxSoundStreamGui::connectSlot(bool & active){
 	if(active){
 		stream->setDeviceID(deviceID);
 		int sampleRate = sampleRates[sampleRateIdx];
-		int bufferSize = pow(2,(int)bufferSizeIdx);
+		int bufferSize = pow(2,(int)bufferSizeIdx+8);
+
+		ofLogNotice("ofxSoundStreamGui") << ofToString(sampleRate);
+		ofLogNotice("ofxSoundStreamGui") << ofToString(bufferSize);
+		ofLogNotice("ofxSoundStreamGui") << ofToString(nBuffers);
 
 		bool result = stream->setup(app,outputChannels,inputChannels,sampleRate,bufferSize,nBuffers);
 
