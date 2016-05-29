@@ -19,6 +19,8 @@ void ofxSelectSlider::setLabels(vector<string> & _labels){
 }
 
 void ofxSelectSlider::generateText(){
+	if(value >= labels.size())
+		return;
 	string valStr = labels[value];
 	textMesh = getTextMesh(getName(), b.x + textPadding, b.y + b.height / 2 + 4);
 	textMesh.append(getTextMesh(valStr, b.x + b.width - textPadding - getTextBoundingBox(valStr,0,0).width, b.y + b.height / 2 + 4));
