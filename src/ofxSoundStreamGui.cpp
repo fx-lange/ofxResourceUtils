@@ -48,6 +48,8 @@ ofxGuiGroup * ofxSoundStreamGui::setup(std::string name, ofSoundStream * stream,
 
 void ofxSoundStreamGui::update(){
 	if(eDeviceChanged){
+		if(deviceID >= devices.size())
+			return;
 		sampleRates = devices[deviceID].sampleRates;
 		std::vector<string> rateStrings;
 		for(size_t i=0;i<sampleRates.size();++i){
